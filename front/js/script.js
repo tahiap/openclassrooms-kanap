@@ -28,7 +28,7 @@ fetch("http://localhost:3000/api/products/")
 			return res.json()
 		}
 	})
-	// récupère les vraies valeurs et modifie le DOM
+	// récupère les valeurs et modifie le DOM
 	.then(function (value) {
 		// boucle qui parcourt l'objet value et créé de nouvelles instances de la classe Product
 		for (let jsonProduct of value) {

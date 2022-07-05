@@ -2,13 +2,14 @@
 gère l'affichage et les intéractions de la page product
 *****/
 
+// RÉCUPÉRATION DES DONNÉES
 // récupère l'id du produit à partir de l'url
 const productId = new URL(location.href).searchParams.get("id")
 
-getArticleFromApi()
+getProductFromApi()
 
 // récupère l'article
-function getArticleFromApi() {
+function getProductFromApi() {
 	fetch("http://localhost:3000/api/products/" + productId)
 		.then(function (res) {
 			if (res.ok) {
@@ -42,9 +43,18 @@ function modifyDom(article) {
 }
 
 // AJOUT DES PRODUITS DANS LE PANIER
+// récupère les éléments du Dom
 const addToCart = document.getElementById("addToCart")
 const color = document.getElementById("colors")
 const quantity = document.getElementById("quantity")
+
+// récupère les infos du local storage
+let productInCart = JSON.parse(localStorage.getItem("product"))
+
+// enregistre les infos dans le local storage
+function saveCart() {
+	localStorage.setItem("product", JSON.stringify(productInCart))
+}
 
 // affiche un message qui incite l'utilisateur à choisir une couleur et une quantité
 function showMessageMissingSettings() {
@@ -64,42 +74,40 @@ function addCart(article) {
 			let colorPicked = color.value
 			let quantityPicked = quantity.value
 
-			// créé la variable contenant les informations à ajouter au panier
-			let articleOrder = {
+			// stocke les infos à ajouter au panier
+			let productOrder = {
 				productId: productId,
 				productColor: colorPicked,
 				productQuantity: quantityPicked,
 				productName: article.name,
 				productPrice: article.price,
+				productImg: article.imageUrl,
+				productAltTxt: article.altTxt,
 			}
-
-			// récupère les infos du produit présent dans le panier
-			let productInCart = JSON.parse(localStorage.getItem("product"))
 
 			if (productInCart) {
 				// si un produit est déjà dans le panier, trouver s'il a le même id et la même couleur
 				const resultFind = productInCart.find(
-					(search) =>
-						search.productId == productId && search.productColor == colorPicked
+					(p) => p.productId == productId && p.productColor == colorPicked
 				)
 
 				if (resultFind) {
 					// si oui, modification de la quantité
-					const productQuantityOrder = parseInt(articleOrder.productQuantity)
+					const productQuantityOrder = parseInt(productOrder.productQuantity)
 					const productQuantityInCart = parseInt(resultFind.productQuantity)
 
 					let newQuantity = productQuantityOrder + productQuantityInCart
 					resultFind.productQuantity = newQuantity
 
-					localStorage.setItem("product", JSON.stringify(productInCart))
+					saveCart()
 
 					console.log(
 						"Un produit avec une id et une couleur identitque se trouve dans le panier : modification de la quantité"
 					)
 				} else {
-					// si non, ajout d'un nouveau produit
-					productInCart.push(articleOrder)
-					localStorage.setItem("product", JSON.stringify(productInCart))
+					// sinon, ajout d'un nouveau produit
+					productInCart.push(productOrder)
+					saveCart()
 
 					console.log(
 						"Aucun produit de même id et couleur ne se trouve dans le panier : ajout du nouveau produit"
@@ -108,8 +116,8 @@ function addCart(article) {
 			} else {
 				// si le panier est vide, ajout du premier produit
 				productInCart = []
-				productInCart.push(articleOrder)
-				localStorage.setItem("product", JSON.stringify(productInCart))
+				productInCart.push(productOrder)
+				saveCart()
 
 				console.log("Le panier est vide : ajout du premier produit")
 			}
