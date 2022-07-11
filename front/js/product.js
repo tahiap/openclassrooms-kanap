@@ -2,10 +2,14 @@
 gère l'affichage et les intéractions de la page product
 *****/
 
+const phrase = "salut les NULS ! "
+console.log(phrase.toLowerCase)
+
 // RÉCUPÉRATION DES DONNÉES
 // récupère l'id du produit à partir de l'url
 const productId = new URL(location.href).searchParams.get("id")
 
+// appel de la fonction
 getProductFromApi()
 
 // récupère l'article grâce à son id
@@ -56,16 +60,6 @@ let productInCart = JSON.parse(localStorage.getItem("product"))
 // enregistre les infos dans le local storage
 function saveCart() {
 	localStorage.setItem("product", JSON.stringify(productInCart))
-}
-
-// affiche un message qui incite l'utilisateur à choisir une couleur et une quantité
-function showMessageMissingSettings() {
-	document.querySelector(
-		".item__content__settings"
-	).innerHTML += `<p class="messageIncompleteOrder">Veuillez choisir une couleur et une quantité !</p>`
-	const incompleteOrder = document.querySelector(".messageIncompleteOrder")
-	incompleteOrder.style.color = "#2C3E50"
-	incompleteOrder.style.textAlign = "center"
 }
 
 function addCart(article) {
@@ -125,7 +119,7 @@ function addCart(article) {
 			}
 		} else {
 			// si les éléments couleur ou quantité sont nulles, afficher le message d'erreur
-			showMessageMissingSettings()
+			alert("Vous devez choisir une couleur et une quantité !")
 		}
 	})
 }

@@ -2,6 +2,7 @@
 gestion du panier
 *****/
 
+// AFFICHAGE DU PANIER
 // récupère les données du local storage
 let productInCart = JSON.parse(localStorage.getItem("product"))
 
@@ -65,6 +66,7 @@ function modifyDom() {
 
 modifyDom()
 
+// MODIFICATION DU PANIER PAR L'UTILISATEUR ET MISE À JOUR DU PANIER
 // écoute l'input quantité et modifie la quantité de produit dans le local storage
 function modifyProductQuantity() {
 	const productQuantityInCart = document.querySelectorAll(".itemQuantity")
@@ -97,7 +99,7 @@ function removeProduct() {
 			// filtre le local storage en fonction de l'id et la couleur de l'élément à supprimer
 			const resultFilter = productInCart.filter(
 				(p) =>
-					p.productId != removeProductId && p.productColor != removeProductColor
+					p.productId != removeProductId || p.productColor != removeProductColor
 			)
 
 			// attribut la nouvelle valeur du panier et enregistre dans le local storage
@@ -112,7 +114,8 @@ function removeProduct() {
 
 removeProduct()
 
-// VALIDATION DU FORMULAIRE
+// GESTION DU FORMULAIRE
+// déclaration des variables pour l'accés au dom
 const firstNameForm = document.getElementById("firstName")
 const lastNameForm = document.getElementById("lastName")
 const cityForm = document.getElementById("city")
@@ -125,7 +128,7 @@ function addPatternDom() {
 	firstNameForm.setAttribute("pattern", "[A-Za-z](([- ',]?[A-Za-z]+)*)")
 	lastNameForm.setAttribute("pattern", "[A-Za-z](([- ',]?[A-Za-z]+)*)")
 	cityForm.setAttribute("pattern", "[A-Za-z](([- ',]?[A-Za-z]+)*)")
-	addressForm.setAttribute("pattern", "[0-9]{1,3}(([ ,.]+['A-Za-z0-9]+)+)")
+	addressForm.setAttribute("pattern", "[0-9]{1,3}(([ ,.]*['A-Za-z0-9]+)+)")
 	email.setAttribute(
 		"pattern",
 		"[A-Za-z0-9](([_.-]?[A-Za-z0-9]+)*)@([A-Za-z0-9]+)(([_.-]?[A-Za-z0-9]+)*).([A-Za-z]{2,})"
@@ -133,12 +136,13 @@ function addPatternDom() {
 }
 addPatternDom()
 
+// ANALYSE DES INPUTS
 // écoute l'input prénom
 function firstNameValidity() {
 	firstNameForm.addEventListener("change", (event) => {
 		if (firstNameForm.validity.patternMismatch == true) {
 			document.getElementById("firstNameErrorMsg").innerHTML =
-				"Le prénom ne doit pas comporter de chiffres ou de caractères spéciaux."
+				"Le prénom ne doit pas comporter de chiffres ou de caractères spéciaux (par exemple : *, %, !, ?...)."
 		} else {
 			document.getElementById("firstNameErrorMsg").innerHTML = ""
 		}
@@ -151,7 +155,7 @@ function lastNameValidity() {
 	lastNameForm.addEventListener("change", (event) => {
 		if (lastNameForm.validity.patternMismatch == true) {
 			document.getElementById("lastNameErrorMsg").innerHTML =
-				"Le nom ne doit pas comporter de chiffres ou de caractères spéciaux."
+				"Le nom ne doit pas comporter de chiffres ou de caractères spéciaux (par exemple : *, %, !, ?...)."
 		} else {
 			document.getElementById("lastNameErrorMsg").innerHTML = ""
 		}
@@ -177,7 +181,7 @@ function cityValidity() {
 	cityForm.addEventListener("change", (event) => {
 		if (cityForm.validity.patternMismatch == true) {
 			document.getElementById("cityErrorMsg").innerHTML =
-				"Le nom de la ville ne doit pas comporter de chiffres ou de caractères spéciaux."
+				"Le nom de la ville ne doit pas comporter de chiffres ou de caractères spéciaux (par exemple : *, %, !, ?...). "
 		} else {
 			document.getElementById("cityErrorMsg").innerHTML = ""
 		}
