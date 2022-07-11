@@ -67,7 +67,7 @@ modifyDom()
 
 // écoute l'input quantité et modifie la quantité de produit dans le local storage
 function modifyProductQuantity() {
-	let productQuantityInCart = document.querySelectorAll(".itemQuantity")
+	const productQuantityInCart = document.querySelectorAll(".itemQuantity")
 
 	for (let k = 0; k < productInCart.length; ++k) {
 		productQuantityInCart[k].addEventListener("change", () => {
@@ -87,7 +87,7 @@ modifyProductQuantity()
 
 // écoute l'élément html .deleteItem et supprime le produit du local storage
 function removeProduct() {
-	let removeButton = document.querySelectorAll(".deleteItem")
+	const removeButton = document.querySelectorAll(".deleteItem")
 
 	for (let h = 0; h < productInCart.length; ++h) {
 		removeButton[h].addEventListener("click", () => {
@@ -111,3 +111,142 @@ function removeProduct() {
 }
 
 removeProduct()
+
+// VALIDATION DU FORMULAIRE
+const firstNameForm = document.getElementById("firstName")
+const lastNameForm = document.getElementById("lastName")
+const cityForm = document.getElementById("city")
+const addressForm = document.getElementById("address")
+const emailForm = document.getElementById("email")
+const submitForm = document.querySelector(".cart__order__form")
+
+// ajout de pattern aux input dans le dom
+function addPatternDom() {
+	firstNameForm.setAttribute("pattern", "[A-Za-z](([- ',]?[A-Za-z]+)*)")
+	lastNameForm.setAttribute("pattern", "[A-Za-z](([- ',]?[A-Za-z]+)*)")
+	cityForm.setAttribute("pattern", "[A-Za-z](([- ',]?[A-Za-z]+)*)")
+	addressForm.setAttribute("pattern", "[0-9]{1,3}(([ ,.]+['A-Za-z0-9]+)+)")
+	email.setAttribute(
+		"pattern",
+		"[A-Za-z0-9](([_.-]?[A-Za-z0-9]+)*)@([A-Za-z0-9]+)(([_.-]?[A-Za-z0-9]+)*).([A-Za-z]{2,})"
+	)
+}
+addPatternDom()
+
+// écoute l'input prénom
+function firstNameValidity() {
+	firstNameForm.addEventListener("change", (event) => {
+		if (firstNameForm.validity.patternMismatch == true) {
+			document.getElementById("firstNameErrorMsg").innerHTML =
+				"Le prénom ne doit pas comporter de chiffres ou de caractères spéciaux."
+		} else {
+			document.getElementById("firstNameErrorMsg").innerHTML = ""
+		}
+	})
+}
+firstNameValidity()
+
+// écoute l'input nom
+function lastNameValidity() {
+	lastNameForm.addEventListener("change", (event) => {
+		if (lastNameForm.validity.patternMismatch == true) {
+			document.getElementById("lastNameErrorMsg").innerHTML =
+				"Le nom ne doit pas comporter de chiffres ou de caractères spéciaux."
+		} else {
+			document.getElementById("lastNameErrorMsg").innerHTML = ""
+		}
+	})
+}
+lastNameValidity()
+
+// écoute l'input adresse
+function addressValidity() {
+	addressForm.addEventListener("change", (event) => {
+		if (addressForm.validity.patternMismatch == true) {
+			document.getElementById("addressErrorMsg").innerHTML =
+				"L'adresse doit comporter le numéro de la voix, suivie du type et du nom de la voix, puis du complétement d'adresse. Exemple : 130 avenue moulin, batiment c"
+		} else {
+			document.getElementById("addressErrorMsg").innerHTML = ""
+		}
+	})
+}
+addressValidity()
+
+// écoute l'input city
+function cityValidity() {
+	cityForm.addEventListener("change", (event) => {
+		if (cityForm.validity.patternMismatch == true) {
+			document.getElementById("cityErrorMsg").innerHTML =
+				"Le nom de la ville ne doit pas comporter de chiffres ou de caractères spéciaux."
+		} else {
+			document.getElementById("cityErrorMsg").innerHTML = ""
+		}
+	})
+}
+cityValidity()
+
+// écoute l'input email
+function emailValidity() {
+	emailForm.addEventListener("change", (event) => {
+		if (emailForm.validity.patternMismatch == true) {
+			document.getElementById("emailErrorMsg").innerHTML =
+				"L'email doit contenir le caractère '@'. Par exemple : nom.prenom@mail.com."
+		} else {
+			document.getElementById("emailErrorMsg").innerHTML = ""
+		}
+	})
+}
+emailValidity()
+
+// ENVOI DU FORMULAIRE ET RECUPERATION DU NUMERO DE COMMANDE
+// gère l'envoi du formulaire
+function postForm() {
+	// récupère l'id des produits du panier dans un tableau
+	let productIds = []
+	for (let l = 0; l < productInCart.length; ++l) {
+		productIds.push(productInCart[l].productId)
+	}
+
+	// écoute l'envoi du formulaire
+	submitForm.addEventListener("submit", (event) => {
+		event.preventDefault()
+		// stocke les infos de la commande
+		let order = {
+			contact: {
+				firstName: firstNameForm.value,
+				lastName: lastNameForm.value,
+				address: addressForm.value,
+				city: cityForm.value,
+				email: emailForm.value,
+			},
+			products: productIds,
+		}
+
+		// effectue la requête POST
+		fetch("http://localhost:3000/api/products/order", {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(order),
+		})
+			.then(function (res) {
+				if (res.ok) {
+					return res.json()
+				}
+			})
+			.then(function (value) {
+				if (value) {
+					let url = "./confirmation.html?id=" + value.orderId
+					document.location.href = url
+				}
+			})
+			.catch(function (err) {
+				console.log(
+					"Il y a eu un problème avec l'opération fetch: " + err.message
+				)
+			})
+	})
+}
+postForm()

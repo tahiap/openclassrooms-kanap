@@ -44,3 +44,6 @@ fetch("http://localhost:3000/api/products/")
 						</a>`
 		}
 	})
+	.catch(function (err) {
+		console.log("Il y a eu un problème avec l'opération fetch: " + err.message)
+	})

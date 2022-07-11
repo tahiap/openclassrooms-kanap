@@ -8,7 +8,7 @@ const productId = new URL(location.href).searchParams.get("id")
 
 getProductFromApi()
 
-// récupère l'article
+// récupère l'article grâce à son id
 function getProductFromApi() {
 	fetch("http://localhost:3000/api/products/" + productId)
 		.then(function (res) {
@@ -22,7 +22,9 @@ function getProductFromApi() {
 			}
 		})
 		.catch(function (err) {
-			// une erreur est survenue
+			console.log(
+				"Il y a eu un problème avec l'opération fetch: " + err.message
+			)
 		})
 }
 
