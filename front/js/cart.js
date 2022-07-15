@@ -1,6 +1,4 @@
-/***** 
-gestion du panier
-*****/
+////// gère l'affichage et les intéractions du panier
 
 // AFFICHAGE DU PANIER
 // récupère les données du local storage
@@ -11,6 +9,35 @@ function saveCart() {
 	localStorage.setItem("product", JSON.stringify(productInCart))
 }
 
+// récupère le reste des informations qui ne sont pas dans le local storage, par exemple le prix
+function getProductsDetails() {
+	// génère une requête http et récupère les articles de l'API
+	fetch("http://localhost:3000/api/products/")
+		// vérifie que la requête s'est bien passée et récupère les données au format json
+		.then(function (res) {
+			if (res.ok) {
+				return res.json()
+			}
+		})
+		// récupère les valeurs dans un tableau et appelle les fonctions qui modifient le dom
+		.then(function (value) {
+			let productsDetails = []
+			for (let i = 0; i < productInCart.length; ++i) {
+				let element = value.find((p) => p._id === productInCart[i].productId)
+				productsDetails.push(element)
+			}
+			modifyDom(productsDetails)
+			modifyProductQuantity()
+			removeProduct()
+		})
+		.catch(function (err) {
+			console.log(
+				"Il y a eu un problème avec l'opération fetch: " + err.message
+			)
+		})
+}
+getProductsDetails()
+
 // calcule le nombre de produits dans le panier
 function getTotalQuantity() {
 	let totalQuantity = 0
@@ -19,52 +46,49 @@ function getTotalQuantity() {
 	}
 	return totalQuantity
 }
-totalQuantity = getTotalQuantity()
 
 // calcule le prix total du panier
-function getTotalPrice() {
+function getTotalPrice(productsDetails) {
 	let totalPrice = 0
 	for (let j = 0; j < productInCart.length; ++j) {
 		totalPrice +=
 			parseInt(productInCart[j].productQuantity) *
-			parseInt(productInCart[j].productPrice)
+			parseInt(productsDetails[j].price)
 	}
 	return totalPrice
 }
-totalPrice = getTotalPrice()
 
 // modifie le dom
-function modifyDom() {
+function modifyDom(productsDetails) {
 	for (let i = 0; i < productInCart.length; ++i) {
 		document.getElementById(
 			"cart__items"
 		).innerHTML += `<article class="cart__item" data-id="${productInCart[i].productId}" data-color="${productInCart[i].productColor}">
-                <div class="cart__item__img">
-                  <img src="${productInCart[i].productImg}" alt="${productInCart[i].productAltTxt}">
-                </div>
-                <div class="cart__item__content">
-                  <div class="cart__item__content__description">
-                    <h2>${productInCart[i].productName}</h2>
-                    <p>${productInCart[i].productColor}</p>
-                    <p>${productInCart[i].productPrice} €</p>
-                  </div>
-                  <div class="cart__item__content__settings">
-                    <div class="cart__item__content__settings__quantity">
-                      <p>Qté : </p>
-                      <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productInCart[i].productQuantity}">
-                    </div>
-                    <div class="cart__item__content__settings__delete">
-                      <p class="deleteItem">Supprimer</p>
-                    </div>
-                  </div>
-                </div>
-              </article>`
-		document.getElementById("totalQuantity").innerHTML = totalQuantity
-		document.getElementById("totalPrice").innerHTML = totalPrice
+                        <div class="cart__item__img">
+                          <img src="${productsDetails[i].imageUrl}" alt="${productsDetails[i].altTxt}">
+                        </div>
+                        <div class="cart__item__content">
+                          <div class="cart__item__content__description">
+                            <h2>${productsDetails[i].name}</h2>
+                            <p>${productInCart[i].productColor}</p>
+                            <p>${productsDetails[i].price} €</p>
+                          </div>
+                          <div class="cart__item__content__settings">
+                            <div class="cart__item__content__settings__quantity">
+                              <p>Qté : </p>
+                              <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productInCart[i].productQuantity}">
+                            </div>
+                            <div class="cart__item__content__settings__delete">
+                              <p class="deleteItem">Supprimer</p>
+                            </div>
+                          </div>
+                        </div>
+                      </article>`
 	}
+	document.getElementById("totalQuantity").innerHTML = getTotalQuantity()
+	document.getElementById("totalPrice").innerHTML =
+		getTotalPrice(productsDetails)
 }
-
-modifyDom()
 
 // MODIFICATION DU PANIER PAR L'UTILISATEUR ET MISE À JOUR DU PANIER
 // écoute l'input quantité et modifie la quantité de produit dans le local storage
@@ -81,11 +105,7 @@ function modifyProductQuantity() {
 			location.reload()
 		})
 	}
-	totalQuantity = getTotalQuantity()
-	totalPrice = getTotalPrice()
 }
-
-modifyProductQuantity()
 
 // écoute l'élément html .deleteItem et supprime le produit du local storage
 function removeProduct() {
@@ -99,7 +119,8 @@ function removeProduct() {
 			// filtre le local storage en fonction de l'id et la couleur de l'élément à supprimer
 			const resultFilter = productInCart.filter(
 				(p) =>
-					p.productId != removeProductId || p.productColor != removeProductColor
+					p.productId !== removeProductId &&
+					p.productColor !== removeProductColor
 			)
 
 			// attribut la nouvelle valeur du panier et enregistre dans le local storage
@@ -107,12 +128,10 @@ function removeProduct() {
 			saveCart()
 
 			// rafraichit la page
-			location.reload()
+			// location.reload()
 		})
 	}
 }
-
-removeProduct()
 
 // GESTION DU FORMULAIRE
 // déclaration des variables pour l'accés au dom
@@ -131,7 +150,7 @@ function addPatternDom() {
 	addressForm.setAttribute("pattern", "[0-9]{1,3}(([ ,.]*['A-Za-z0-9]+)+)")
 	email.setAttribute(
 		"pattern",
-		"[A-Za-z0-9](([_.-]?[A-Za-z0-9]+)*)@([A-Za-z0-9]+)(([_.-]?[A-Za-z0-9]+)*).([A-Za-z]{2,})"
+		"[A-Za-z0-9](([_.-]?[A-Za-z0-9]+)*)@([A-Za-z0-9]+)(([_.-]?[A-Za-z0-9]+)*)\\.([A-Za-z]{2,})"
 	)
 }
 addPatternDom()
@@ -139,8 +158,8 @@ addPatternDom()
 // ANALYSE DES INPUTS
 // écoute l'input prénom
 function firstNameValidity() {
-	firstNameForm.addEventListener("change", (event) => {
-		if (firstNameForm.validity.patternMismatch == true) {
+	firstNameForm.addEventListener("change", () => {
+		if (firstNameForm.validity.patternMismatch === true) {
 			document.getElementById("firstNameErrorMsg").innerHTML =
 				"Le prénom ne doit pas comporter de chiffres ou de caractères spéciaux (par exemple : *, %, !, ?...)."
 		} else {
@@ -152,8 +171,8 @@ firstNameValidity()
 
 // écoute l'input nom
 function lastNameValidity() {
-	lastNameForm.addEventListener("change", (event) => {
-		if (lastNameForm.validity.patternMismatch == true) {
+	lastNameForm.addEventListener("change", () => {
+		if (lastNameForm.validity.patternMismatch === true) {
 			document.getElementById("lastNameErrorMsg").innerHTML =
 				"Le nom ne doit pas comporter de chiffres ou de caractères spéciaux (par exemple : *, %, !, ?...)."
 		} else {
@@ -165,8 +184,8 @@ lastNameValidity()
 
 // écoute l'input adresse
 function addressValidity() {
-	addressForm.addEventListener("change", (event) => {
-		if (addressForm.validity.patternMismatch == true) {
+	addressForm.addEventListener("change", () => {
+		if (addressForm.validity.patternMismatch === true) {
 			document.getElementById("addressErrorMsg").innerHTML =
 				"L'adresse doit comporter le numéro de la voix, suivie du type et du nom de la voix, puis du complétement d'adresse. Exemple : 130 avenue moulin, batiment c"
 		} else {
@@ -178,8 +197,8 @@ addressValidity()
 
 // écoute l'input city
 function cityValidity() {
-	cityForm.addEventListener("change", (event) => {
-		if (cityForm.validity.patternMismatch == true) {
+	cityForm.addEventListener("change", () => {
+		if (cityForm.validity.patternMismatch === true) {
 			document.getElementById("cityErrorMsg").innerHTML =
 				"Le nom de la ville ne doit pas comporter de chiffres ou de caractères spéciaux (par exemple : *, %, !, ?...). "
 		} else {
@@ -191,8 +210,8 @@ cityValidity()
 
 // écoute l'input email
 function emailValidity() {
-	emailForm.addEventListener("change", (event) => {
-		if (emailForm.validity.patternMismatch == true) {
+	emailForm.addEventListener("change", () => {
+		if (emailForm.validity.patternMismatch === true) {
 			document.getElementById("emailErrorMsg").innerHTML =
 				"L'email doit contenir le caractère '@'. Par exemple : nom.prenom@mail.com."
 		} else {
@@ -244,6 +263,7 @@ function postForm() {
 				if (value) {
 					let url = "./confirmation.html?id=" + value.orderId
 					document.location.href = url
+					clearCart()
 				}
 			})
 			.catch(function (err) {
@@ -254,3 +274,7 @@ function postForm() {
 	})
 }
 postForm()
+
+function clearCart() {
+	localStorage.clear()
+}

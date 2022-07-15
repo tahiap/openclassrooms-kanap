@@ -1,9 +1,4 @@
-/*****
-gère l'affichage et les intéractions de la page product
-*****/
-
-const phrase = "salut les NULS ! "
-console.log(phrase.toLowerCase)
+////// gère l'affichage et les intéractions de la page product
 
 // RÉCUPÉRATION DES DONNÉES
 // récupère l'id du produit à partir de l'url
@@ -40,7 +35,7 @@ function modifyDom(article) {
 	document.getElementById("title").innerHTML += article.name
 	document.getElementById("price").innerHTML += article.price
 	document.getElementById("description").innerHTML += article.description
-	for (let i = 0; i < article.colors.length; i++) {
+	for (let i = 0; i < article.colors.length; ++i) {
 		document.getElementById(
 			"colors"
 		).innerHTML += `<option value="${article.colors[i]}">${article.colors[i]}</option>`
@@ -62,10 +57,10 @@ function saveCart() {
 	localStorage.setItem("product", JSON.stringify(productInCart))
 }
 
-function addCart(article) {
+function addCart() {
 	// écoute le bouton d'ajout au panier, les conditions couleur et quantité ne doivent pas être nulles
 	addToCart.addEventListener("click", () => {
-		if (quantity.value > 0 && quantity.value <= 100 && color.value != 0) {
+		if (quantity.value > 0 && quantity.value <= 100 && color.value !== 0) {
 			// récupère les valeurs des input couleur et quantité
 			let colorPicked = color.value
 			let quantityPicked = quantity.value
@@ -75,16 +70,12 @@ function addCart(article) {
 				productId: productId,
 				productColor: colorPicked,
 				productQuantity: quantityPicked,
-				productName: article.name,
-				productPrice: article.price,
-				productImg: article.imageUrl,
-				productAltTxt: article.altTxt,
 			}
 
 			if (productInCart) {
 				// si un produit est déjà dans le panier, trouver s'il a le même id et la même couleur
 				const resultFind = productInCart.find(
-					(p) => p.productId == productId && p.productColor == colorPicked
+					(p) => p.productId === productId && p.productColor === colorPicked
 				)
 
 				if (resultFind) {
@@ -96,26 +87,16 @@ function addCart(article) {
 					resultFind.productQuantity = newQuantity
 
 					saveCart()
-
-					console.log(
-						"Un produit avec une id et une couleur identitque se trouve dans le panier : modification de la quantité"
-					)
 				} else {
 					// sinon, ajout d'un nouveau produit
 					productInCart.push(productOrder)
 					saveCart()
-
-					console.log(
-						"Aucun produit de même id et couleur ne se trouve dans le panier : ajout du nouveau produit"
-					)
 				}
 			} else {
 				// si le panier est vide, ajout du premier produit
 				productInCart = []
 				productInCart.push(productOrder)
 				saveCart()
-
-				console.log("Le panier est vide : ajout du premier produit")
 			}
 		} else {
 			// si les éléments couleur ou quantité sont nulles, afficher le message d'erreur

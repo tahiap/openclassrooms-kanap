@@ -1,22 +1,15 @@
-/*****
-gère l'affichage et les intéractions de la page d'accueil
-*****/
+////// gère l'affichage et les intéractions de la page d'accueil
 
-// class Product{
-// 	constructor(jsonProduct){
-// 		this.name = jsonProduct.name;
-// 		this.price = jsonProduct.price;
-// 		this.imageUrl = jsonProduct.imageURL;
-// 		this.description = jsonProduct.description;
-// 		this.altTxt = jsonProduct.altTxt;
-// 	}
-// }
-
-// créé d'une classe : permet de construire des objets du même type
+// créé une classe : permet de construire des objets du même type
 class Product {
 	constructor(jsonProduct) {
 		// assigne les valeurs récupérées
-		jsonProduct && Object.assign(this, jsonProduct)
+		this._id = jsonProduct._id
+		this.name = jsonProduct.name
+		this.price = jsonProduct.price
+		this.imageUrl = jsonProduct.imageUrl
+		this.description = jsonProduct.description
+		this.altTxt = jsonProduct.altTxt
 	}
 }
 

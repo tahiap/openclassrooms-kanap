@@ -1,6 +1,4 @@
-/*****
-gère l'affichage et les intéractions de la page confirmation
-*****/
+////// gère l'affichage et les intéractions de la page confirmation
 
 // récupère le numéro de commande
 function getOrderId() {
