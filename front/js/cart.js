@@ -119,7 +119,7 @@ function removeProduct() {
 			// filtre le local storage en fonction de l'id et la couleur de l'élément à supprimer
 			const resultFilter = productInCart.filter(
 				(p) =>
-					p.productId !== removeProductId &&
+					p.productId !== removeProductId ||
 					p.productColor !== removeProductColor
 			)
 
@@ -128,7 +128,7 @@ function removeProduct() {
 			saveCart()
 
 			// rafraichit la page
-			// location.reload()
+			location.reload()
 		})
 	}
 }
