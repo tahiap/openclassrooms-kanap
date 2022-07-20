@@ -61,32 +61,96 @@ function getTotalPrice(productsDetails) {
 // modifie le dom
 function modifyDom(productsDetails) {
 	for (let i = 0; i < productInCart.length; ++i) {
-		document.getElementById(
-			"cart__items"
-		).innerHTML += `<article class="cart__item" data-id="${productInCart[i].productId}" data-color="${productInCart[i].productColor}">
-                        <div class="cart__item__img">
-                          <img src="${productsDetails[i].imageUrl}" alt="${productsDetails[i].altTxt}">
-                        </div>
-                        <div class="cart__item__content">
-                          <div class="cart__item__content__description">
-                            <h2>${productsDetails[i].name}</h2>
-                            <p>${productInCart[i].productColor}</p>
-                            <p>${productsDetails[i].price} €</p>
-                          </div>
-                          <div class="cart__item__content__settings">
-                            <div class="cart__item__content__settings__quantity">
-                              <p>Qté : </p>
-                              <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productInCart[i].productQuantity}">
-                            </div>
-                            <div class="cart__item__content__settings__delete">
-                              <p class="deleteItem">Supprimer</p>
-                            </div>
-                          </div>
-                        </div>
-                      </article>`
+		// insère l'article
+		let productArticle = document.createElement("article")
+		document.getElementById("cart__items").appendChild(productArticle)
+		productArticle.classList.add("cart__item")
+		productArticle.setAttribute("data-id", productInCart[i].productId)
+		productArticle.setAttribute("data-color", productInCart[i].productColor)
+
+		// insère la div contenant l'image
+		let productDivImg = document.createElement("div")
+		productArticle.appendChild(productDivImg)
+		productDivImg.classList.add("cart__item__img")
+
+		// insère l'image
+		let productImg = document.createElement("img")
+		productDivImg.appendChild(productImg)
+		productImg.setAttribute("src", productsDetails[i].imageUrl)
+		productImg.setAttribute("alt", productsDetails[i].altTxt)
+
+		// insère la div contenant les informations du produit
+		let productDivContent = document.createElement("div")
+		productArticle.appendChild(productDivContent)
+		productDivContent.classList.add("cart__item__content")
+
+		// insère la div contenant la description du produit
+		let productDivContentDescription = document.createElement("div")
+		productDivContent.appendChild(productDivContentDescription)
+		productDivContentDescription.classList.add(
+			"cart__item__content__description"
+		)
+
+		// insère le titre
+		let productName = document.createElement("h2")
+		productDivContentDescription.appendChild(productName)
+		productName.textContent = productsDetails[i].name
+
+		// insère la couleur du produit
+		let productColor = document.createElement("p")
+		productDivContentDescription.appendChild(productColor)
+		productColor.textContent = productInCart[i].productColor
+
+		// insère le prix du produit
+		let productPrice = document.createElement("p")
+		productDivContentDescription.appendChild(productPrice)
+		productPrice.textContent = `${productsDetails[i].price}€`
+
+		// insère la div contenant les options de personnalisation du produit
+		let productDivContentSettings = document.createElement("div")
+		document
+		productDivContent.appendChild(productDivContentSettings)
+		productDivContentSettings.classList.add("cart__item__content__settings")
+
+		// insère la div contenant l'élément 'supprimer'
+		let productDivContentSettingsQuantity = document.createElement("div")
+		document
+		productDivContentSettings.appendChild(productDivContentSettingsQuantity)
+		productDivContentSettingsQuantity.classList.add(
+			"cart__item__content__settings__quantity"
+		)
+
+		// insère le texte "Qté"
+		let productQuantityText = document.createElement("p")
+		productDivContentSettingsQuantity.appendChild(productQuantityText)
+		productQuantityText.textContent = "Qté : "
+
+		// insère l'input quantité
+		let productQuantityInput = document.createElement("input")
+		productDivContentSettingsQuantity.appendChild(productQuantityInput)
+		productQuantityInput.setAttribute("type", "number")
+		productQuantityInput.classList.add("itemQuantity")
+		productQuantityInput.setAttribute("name", "itemQuantity")
+		productQuantityInput.setAttribute("min", "1")
+		productQuantityInput.setAttribute("max", "100")
+		productQuantityInput.setAttribute("value", productInCart[i].productQuantity)
+
+		// insère la div contenant l'élément 'supprimer'
+		let productDivContentSettingsDelete = document.createElement("div")
+		document
+		productDivContentSettings.appendChild(productDivContentSettingsDelete)
+		productDivContentSettingsDelete.classList.add(
+			"cart__item__content__settings__delete"
+		)
+
+		// insère l'élément 'supprimer'
+		let productDelete = document.createElement("p")
+		productDivContentSettingsDelete.appendChild(productDelete)
+		productDelete.classList.add("deleteItem")
+		productDelete.textContent = "Supprimer"
 	}
-	document.getElementById("totalQuantity").innerHTML = getTotalQuantity()
-	document.getElementById("totalPrice").innerHTML =
+	document.getElementById("totalQuantity").textContent = getTotalQuantity()
+	document.getElementById("totalPrice").textContent =
 		getTotalPrice(productsDetails)
 }
 
@@ -97,7 +161,7 @@ function modifyProductQuantity() {
 
 	for (let k = 0; k < productInCart.length; ++k) {
 		productQuantityInCart[k].addEventListener("change", () => {
-			// attribut la nouvelle quantité au produit du panier et enregistre dans le local storage
+			// attribue la nouvelle quantité au produit du panier et enregistre dans le local storage
 			productInCart[k].productQuantity = productQuantityInCart[k].value
 			saveCart()
 
@@ -123,7 +187,7 @@ function removeProduct() {
 					p.productColor !== removeProductColor
 			)
 
-			// attribut la nouvelle valeur du panier et enregistre dans le local storage
+			// attribue la nouvelle valeur du panier et enregistre dans le local storage
 			productInCart = resultFilter
 			saveCart()
 
@@ -160,10 +224,10 @@ addPatternDom()
 function firstNameValidity() {
 	firstNameForm.addEventListener("change", () => {
 		if (firstNameForm.validity.patternMismatch === true) {
-			document.getElementById("firstNameErrorMsg").innerHTML =
+			document.getElementById("firstNameErrorMsg").textContent =
 				"Le prénom ne doit pas comporter de chiffres ou de caractères spéciaux (par exemple : *, %, !, ?...)."
 		} else {
-			document.getElementById("firstNameErrorMsg").innerHTML = ""
+			document.getElementById("firstNameErrorMsg").textContent = ""
 		}
 	})
 }
@@ -173,10 +237,10 @@ firstNameValidity()
 function lastNameValidity() {
 	lastNameForm.addEventListener("change", () => {
 		if (lastNameForm.validity.patternMismatch === true) {
-			document.getElementById("lastNameErrorMsg").innerHTML =
+			document.getElementById("lastNameErrorMsg").textContent =
 				"Le nom ne doit pas comporter de chiffres ou de caractères spéciaux (par exemple : *, %, !, ?...)."
 		} else {
-			document.getElementById("lastNameErrorMsg").innerHTML = ""
+			document.getElementById("lastNameErrorMsg").textContent = ""
 		}
 	})
 }
@@ -186,10 +250,10 @@ lastNameValidity()
 function addressValidity() {
 	addressForm.addEventListener("change", () => {
 		if (addressForm.validity.patternMismatch === true) {
-			document.getElementById("addressErrorMsg").innerHTML =
+			document.getElementById("addressErrorMsg").textContent =
 				"L'adresse doit comporter le numéro de la voix, suivie du type et du nom de la voix, puis du complétement d'adresse. Exemple : 130 avenue moulin, batiment c"
 		} else {
-			document.getElementById("addressErrorMsg").innerHTML = ""
+			document.getElementById("addressErrorMsg").textContent = ""
 		}
 	})
 }
@@ -199,10 +263,10 @@ addressValidity()
 function cityValidity() {
 	cityForm.addEventListener("change", () => {
 		if (cityForm.validity.patternMismatch === true) {
-			document.getElementById("cityErrorMsg").innerHTML =
+			document.getElementById("cityErrorMsg").textContent =
 				"Le nom de la ville ne doit pas comporter de chiffres ou de caractères spéciaux (par exemple : *, %, !, ?...). "
 		} else {
-			document.getElementById("cityErrorMsg").innerHTML = ""
+			document.getElementById("cityErrorMsg").textContent = ""
 		}
 	})
 }
@@ -212,10 +276,10 @@ cityValidity()
 function emailValidity() {
 	emailForm.addEventListener("change", () => {
 		if (emailForm.validity.patternMismatch === true) {
-			document.getElementById("emailErrorMsg").innerHTML =
+			document.getElementById("emailErrorMsg").textContent =
 				"L'email doit contenir le caractère '@'. Par exemple : nom.prenom@mail.com."
 		} else {
-			document.getElementById("emailErrorMsg").innerHTML = ""
+			document.getElementById("emailErrorMsg").textContent = ""
 		}
 	})
 }
@@ -225,9 +289,9 @@ emailValidity()
 // gère l'envoi du formulaire
 function postForm() {
 	// récupère l'id des produits du panier dans un tableau
-	let productIds = []
+	let productsId = []
 	for (let l = 0; l < productInCart.length; ++l) {
-		productIds.push(productInCart[l].productId)
+		productsId.push(productInCart[l].productId)
 	}
 
 	// écoute l'envoi du formulaire
@@ -242,7 +306,7 @@ function postForm() {
 				city: cityForm.value,
 				email: emailForm.value,
 			},
-			products: productIds,
+			products: productsId,
 		}
 
 		// effectue la requête POST

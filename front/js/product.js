@@ -29,22 +29,36 @@ function getProductFromApi() {
 
 // modifie le DOM
 function modifyDom(article) {
-	document.querySelector(
-		".item__img"
-	).innerHTML += `<img src="${article.imageUrl}" alt="${article.altTxt}"></img>`
-	document.getElementById("title").innerHTML += article.name
-	document.getElementById("price").innerHTML += article.price
-	document.getElementById("description").innerHTML += article.description
-	for (let i = 0; i < article.colors.length; ++i) {
-		document.getElementById(
-			"colors"
-		).innerHTML += `<option value="${article.colors[i]}">${article.colors[i]}</option>`
+	// insère l'image
+	let productImg = document.createElement("img")
+	document.querySelector(".item__img").appendChild(productImg)
+	productImg.setAttribute("src", article.imageUrl)
+	productImg.setAttribute("alt", `${article.altTxt}, ${article.name}`)
+
+	// insère le titre
+	let productName = document.getElementById("title")
+	productName.textContent = article.name
+
+	// insère le prix
+	let productPrice = document.getElementById("price")
+	productPrice.textContent = article.price
+
+	// insère la description
+	let productDescription = document.getElementById("description")
+	productDescription.textContent = article.description
+
+	// insère les options de couleur
+	for (let color of article.colors) {
+		let productColors = document.createElement("option")
+		document.getElementById("colors").appendChild(productColors)
+		productColors.setAttribute("value", color)
+		productColors.textContent = color
 	}
 	addCart(article)
 }
 
 // AJOUT DES PRODUITS DANS LE PANIER
-// récupère les éléments du Dom
+// déclaration des variables pour l'accés au dom
 const addToCart = document.getElementById("addToCart")
 const color = document.getElementById("colors")
 const quantity = document.getElementById("quantity")
@@ -60,7 +74,7 @@ function saveCart() {
 function addCart() {
 	// écoute le bouton d'ajout au panier, les conditions couleur et quantité ne doivent pas être nulles
 	addToCart.addEventListener("click", () => {
-		if (quantity.value > 0 && quantity.value <= 100 && color.value !== 0) {
+		if (quantity.value > 0 && quantity.value <= 100 && color.value !== "") {
 			// récupère les valeurs des input couleur et quantité
 			let colorPicked = color.value
 			let quantityPicked = quantity.value

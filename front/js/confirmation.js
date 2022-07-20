@@ -9,6 +9,6 @@ function getOrderId() {
 // modifie le dom
 function modifyDom() {
 	const orderId = getOrderId()
-	document.getElementById("orderId").innerHTML += `${orderId}`
+	document.getElementById("orderId").textContent = orderId
 }
 modifyDom()

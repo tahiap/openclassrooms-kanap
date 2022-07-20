@@ -26,15 +26,33 @@ fetch("http://localhost:3000/api/products/")
 		// boucle qui parcourt l'objet value et créé de nouvelles instances de la classe Product
 		for (let jsonProduct of value) {
 			let product = new Product(jsonProduct)
-			document.getElementById(
-				"items"
-			).innerHTML += `<a href="./product.html?id=${product._id}">
-							<article>
-								<img src="${product.imageUrl}" alt="${product.altTxt}, ${product.name}">
-								<h3 class="productName">${product.name}</h3>
-								<p class="productDescription">${product.description}</p>
-							</article>
-						</a>`
+
+			// insère le lien
+			let productLink = document.createElement("a")
+			document.querySelector(".items").appendChild(productLink)
+			productLink.setAttribute("href", `./product.html?id=${product._id}`)
+
+			// insère l'article
+			let productArticle = document.createElement("article")
+			productLink.appendChild(productArticle)
+
+			// insère l'image
+			let productImg = document.createElement("img")
+			productArticle.appendChild(productImg)
+			productImg.setAttribute("src", product.imageUrl)
+			productImg.setAttribute("alt", `${product.altTxt}, ${product.name}`)
+
+			// insère le titre
+			let productName = document.createElement("h3")
+			productArticle.appendChild(productName)
+			productName.classList.add("productName")
+			productName.textContent = product.name
+
+			// insère la description
+			let productDescription = document.createElement("p")
+			productArticle.appendChild(productDescription)
+			productDescription.classList.add("productDescription")
+			productDescription.textContent = product.description
 		}
 	})
 	.catch(function (err) {
