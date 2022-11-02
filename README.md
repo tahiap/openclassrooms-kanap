@@ -6,6 +6,8 @@ Il a pour objectif la construction d'un site de e-commerce en javascript. La par
 
 # Guide de déploiement
 
+- Cloner le repository : $ git clone https://github.com/tahiap/openclassrooms-kanap.git
+
 ## Backend
 
 - S'assurer que Node.js soit installé sur la machine.
